@@ -1,0 +1,27 @@
+{
+  "functions": {
+    "source": "functions"
+  },
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/scan-food",
+        "function": {
+          "functionId": "aiScanFood",
+          "region": "us-central1",
+          "pinTag": true
+        }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

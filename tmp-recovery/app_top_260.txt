@@ -1,0 +1,261 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { signOut, type User } from "firebase/auth";
+import { auth } from "./auth";
+import { Capacitor } from '@capacitor/core';
+import { getFoodHistory, getRecentFoods, saveFoodToHistory, saveRecentFood } from './services/cacheFood';
+import { parseFoodInput, parseMultiFoodInput } from './parseFoodInput';
+import React, { startTransition, useState, useEffect, useMemo, useRef } from 'react';
+import {
+  Plus,
+  Minus,
+  Utensils,
+  Droplets,
+  Flame,
+  TrendingUp,
+  Camera,
+  Image,
+  Mic,
+  Search,
+  History,
+  Settings as SettingsIcon,
+  X,
+  Loader2,
+  Trash2,
+  RefreshCw,
+  CheckCircle2,
+  Bell,
+  Circle,
+  PlusCircle,
+  Sparkles,
+  Brain,
+  Moon as MoonIcon,
+  Sun as SunIcon,
+  Coffee,
+  Heart,
+  Dumbbell,
+  Scale,
+  Star,
+  Download,
+  Upload,
+  Target,
+  Calendar,
+  Ruler,
+  User as UserIcon,
+  ArrowUpRight,
+  Zap,
+  ShieldCheck,
+  Package,
+  Globe2,
+  LogOut,
+  Pencil,
+  type LucideIcon
+} from 'lucide-react';
+import { format, startOfDay, isSameDay } from 'date-fns';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  ReferenceLine
+} from 'recharts';
+import { motion, AnimatePresence, MotionConfig, useMotionValue, useReducedMotion, useSpring, useTransform } from 'motion/react';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+import { FoodEntry, ActivityEntry, WaterEntry, UserProfile, HealthData, Habit, HabitLog, WeightEntry, MealType, FoodSearchResult, FoodSource, DailyCheckIn, OnboardingProfile, NutritionTrustLevel, DashboardMetricKey } from './types';
+import { addFoodLog, clearFoodLogs, deleteFoodLog, updateFoodLog } from './services/foodLogs';
+import { getLocalFoodNames } from './services/localNutrition';
+import { lookupFoodData, searchFoods } from './services/foodData';
+import { isAiFoodScanAvailable, scanFoodImage } from './services/aiFoodScan';
+import { generateCoachInsights } from './services/coach';
+import { evaluateAchievements } from './services/achievements';
+import { requestNotificationPermission, startReminderScheduler } from './services/reminders';
+import { buildFoodEntriesFromTemplate, createMealTemplate } from './services/templates';
+import { buildFoodEntriesFromPlannedMeal, buildWeeklyMealPlan, getSuggestedMealType, suggestMealsForCoach } from './services/mealPlanning';
+import { getRestaurantRecommendations, restaurantChoiceToFoodResult } from './services/restaurantMode';
+import { buildWeeklyProgressReport } from './services/weeklyReport';
+import {
+  DEFAULT_ONBOARDING,
+  DEFAULT_DASHBOARD_METRICS,
+  ONBOARDING_OPTIONS,
+  createInitialHealthData,
+  loadThemePreference,
+  saveThemePreference,
+} from './services/appData';
+import { createBackupPayload, getBackupFilename, parseBackupText, serializeBackupPayload } from './services/backup';
+import { getTelemetrySummary, reportError, trackEvent } from './services/telemetry';
+import {
+  createWallpaperAssetReference,
+  deleteWallpaperAsset,
+  isWallpaperAssetReference,
+  loadWallpaperAsset,
+  saveWallpaperAsset,
+} from './services/wallpaperStorage';
+import { buildAdaptiveCalorieRecommendation } from './services/adaptiveTargets';
+import { buildHealthSyncState } from './services/healthSync';
+import {
+  getHealthConnectStatus,
+  isHealthConnectSupportedPlatform,
+  mergeHealthSyncIntoData,
+  requestHealthConnectPermissions,
+  shouldAutoRefreshHealthConnect,
+  syncHealthConnectData,
+} from './services/healthConnect';
+import { isLikelyBarcode, lookupBarcodeFood, normalizeBarcode, upsertBarcodeCatalog } from './services/barcode';
+import { describeFoodTrust, enrichFoodMetadata, getFoodSourceLabel } from './services/nutritionTrust';
+import { isUsdaLookupAvailable } from './services/usda';
+import { useLocalHealthData } from './hooks/useLocalHealthData';
+import { useFoodLogSync } from './hooks/useFoodLogSync';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+const hexToRgb = (hex: string, fallback: [number, number, number] = [113, 113, 122]) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] as [number, number, number]
+    : fallback;
+};
+
+const toNeutralRgb = (hex: string, fallback: [number, number, number] = [113, 113, 122]) => {
+  const [r, g, b] = hexToRgb(hex, fallback);
+  const luminance = Math.round((0.299 * r) + (0.587 * g) + (0.114 * b));
+  const gray = Math.max(48, Math.min(210, luminance));
+  return [gray, gray, gray] as [number, number, number];
+};
+
+const toNeutralHex = (hex: string, fallback = '#71717a') => {
+  const fallbackRgb = hexToRgb(fallback, [113, 113, 122]);
+  const [gray] = toNeutralRgb(hex, fallbackRgb);
+  const channel = gray.toString(16).padStart(2, '0');
+  return `#${channel}${channel}${channel}`;
+};
+
+const HabitIcon = ({ name, size = 20, className = "", color }: { name: string, size?: number, className?: string, color?: string }) => {
+  const icons: Record<string, LucideIcon> = {
+    Brain,
+    Coffee,
+    Moon: MoonIcon,
+    Sun: SunIcon,
+    Heart,
+    Dumbbell,
+    Sparkles,
+    Utensils,
+    Droplets,
+    CheckCircle2,
+    Circle,
+    PlusCircle,
+    Flame,
+    Scale,
+    TrendingUp
+  };
+  const Icon = icons[name] || Sparkles;
+  return <Icon size={size} className={className} style={color ? { color: toNeutralHex(color) } : undefined} />;
+};
+
+function AnimatedNumberMotion({ value }: { value: number }) {
+  const motionValue = useMotionValue(value);
+  const springValue = useSpring(motionValue, { damping: 25, stiffness: 150 });
+  const displayValue = useTransform(springValue, (current) => Math.round(current));
+
+  useEffect(() => {
+    motionValue.set(value);
+  }, [value, motionValue]);
+
+  return <motion.span>{displayValue}</motion.span>;
+}
+
+function AnimatedNumber({ value }: { value: number }) {
+  const prefersReducedMotion = useReducedMotion();
+  const shouldRenderStaticValue =
+    prefersReducedMotion ||
+    Capacitor.isNativePlatform() ||
+    (typeof window !== 'undefined' && window.innerWidth < 640);
+
+  if (shouldRenderStaticValue) {
+    return <span>{Math.round(value)}</span>;
+  }
+
+  return <AnimatedNumberMotion value={value} />;
+}
+
+const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+const MEAL_LABELS: Record<MealType, string> = {
+  breakfast: 'Breakfast',
+  lunch: 'Lunch',
+  dinner: 'Dinner',
+  snack: 'Snacks'
+};
+
+const MEAL_VISUALS: Record<MealType, { icon: LucideIcon; accentClass: string }> = {
+  breakfast: { icon: Coffee, accentClass: 'premium-log-meal-breakfast' },
+  lunch: { icon: Utensils, accentClass: 'premium-log-meal-lunch' },
+  dinner: { icon: MoonIcon, accentClass: 'premium-log-meal-dinner' },
+  snack: { icon: Sparkles, accentClass: 'premium-log-meal-snack' },
+};
+
+const GOAL_LABELS: Record<UserProfile['goalType'], string> = {
+  lose: 'Lose Weight',
+  maintain: 'Maintain',
+  gain: 'Gain Weight'
+};
+
+const GOAL_FOCUS_OPTIONS: Array<{
+  value: OnboardingProfile['primaryFocus'];
+  label: string;
+  helper: string;
+  icon: LucideIcon;
+}> = [
+  { value: 'fat_loss', label: 'Fat loss', helper: 'Lean down with a clear calorie deficit.', icon: Flame },
+  { value: 'recomposition', label: 'Maintain / recomp', helper: 'Stay steady while improving body composition.', icon: Target },
+  { value: 'weight_gain', label: 'Weight gain', helper: 'Add scale weight with a steady calorie surplus.', icon: TrendingUp },
+  { value: 'muscle_gain', label: 'Muscle gain', helper: 'Bias calories and protein toward growth.', icon: Dumbbell },
+];
+
+const DASHBOARD_METRIC_OPTIONS: Array<{
+  value: DashboardMetricKey;
+  label: string;
+  helper: string;
+  icon: LucideIcon;
+}> = [
+  { value: 'carbs', label: 'Carbs', helper: 'Fuel and recovery', icon: Brain },
+  { value: 'fat', label: 'Fat', helper: 'Hormones and satiety', icon: Heart },
+  { value: 'fiber', label: 'Fiber', helper: 'Digestion and fullness', icon: Sparkles },
+  { value: 'sugar', label: 'Sugar', helper: 'Keep spikes visible', icon: Coffee },
+  { value: 'sodium', label: 'Sodium', helper: 'Packaged-food awareness', icon: ShieldCheck },
+];
+
+const FASTING_PLAN_OPTIONS = [
+  { value: '12:12', label: '12:12', fastHours: 12, eatingHours: 12 },
+  { value: '14:10', label: '14:10', fastHours: 14, eatingHours: 10 },
+  { value: '16:8', label: '16:8', fastHours: 16, eatingHours: 8 },
+  { value: '18:6', label: '18:6', fastHours: 18, eatingHours: 6 },
+] as const;
+
+const isDashboardMetricKey = (value: unknown): value is DashboardMetricKey =>
+  typeof value === 'string' && DASHBOARD_METRIC_OPTIONS.some((option) => option.value === value);
+
+const normalizeDashboardMetrics = (metrics?: DashboardMetricKey[]) => {
+  const nextMetrics = Array.isArray(metrics)
+    ? Array.from(new Set(metrics.filter((item) => isDashboardMetricKey(item))))
+    : [];
+
+  return (nextMetrics.length > 0 ? nextMetrics : DEFAULT_DASHBOARD_METRICS).slice(0, 2);
+};
+
+const deriveMacroTargets = (input: {
+

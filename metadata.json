@@ -1,0 +1,5 @@
+{
+  "name": "CALSNAP AI Health Tracker",
+  "description": "A comprehensive health and calorie tracker with AI-powered food analysis.",
+  "requestFramePermissions": ["camera", "microphone"]
+}

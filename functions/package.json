@@ -1,0 +1,14 @@
+{
+  "name": "calsnap-ai-functions",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "20"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@google/genai": "^1.29.0",
+    "calsnap-ai": "file:..",
+    "firebase-functions": "^6.1.1"
+  }
+}

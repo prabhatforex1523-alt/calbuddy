@@ -1,0 +1,743 @@
+Exit code: 0
+Wall time: 0.6 seconds
+Total output lines: 1329
+Output:
+--- 7656..8062 ---
+  7656:               <details className="glass-card p-7 space-y-5">
+  7657:                 <summary className="cursor-pointer list-none flex items-center justify-between gap-3">
+  7658:                   <div>
+  7659:                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-300">Routines</p>
+  7660:                     <p className="mt-1 text-sm font-semibold text-[#111827] dark:text-white">Open habit management</p>
+  7661:                   </div>
+  7662:                   <span className="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] bg-slate-200 text-slate-700 dark:bg-[#24364e] dark:text-slate-200">
+  7663:                     Secondary
+  7664:                   </span>
+  7665:                 </summary>
+  7666:                 <div className="mt-5 space-y-5">
+  7667:                   <div className="flex items-center justify-between">
+  7668:                     <h4 className="font-bold text-[#111827] dark:text-white">Manage Habits</h4>
+  7669:                     <motion.button
+  7670:                       whileHover={{ scale: 1.05 }}
+  7671:                       whileTap={{ scale: 0.95 }}
+  7672:                       onClick={() => setIsAddHabitOpen(true)}
+  7673:                       className={actionLinkStyles}
+  7674:                     >
+  7675:                       <Plus size={16} /> Add Habit
+  7676:                     </motion.button>
+  7677:                   </div>
+  7678:                   <div className="space-y-2">
+  7679:                     {data.habits.length === 0 ? (
+  7680:                       <p className="text-center py-4 text-slate-600 dark:text-slate-300 text-xs italic">No habits added yet</p>
+  7681:                     ) : (
+  7682:                       data.habits.map(habit => (
+  7683:                         <div key={habit.id} className="neutral-row p-3 flex items-center justify-between">
+  7684:                           <div className="flex items-center gap-3">
+  7685:                             <div className="w-8 h-8 rounded-lg neutral-soft-icon flex items-center justify-center">
+  7686:                               <HabitIcon name={habit.icon} size={16} />
+  7687:                             </div>
+  7688:                             <span className="text-sm font-medium text-[#111827] dark:text-white">{habit.name}</span>
+  7689:                           </div>
+  7690:                           <button
+  7691:                             onClick={() => {
+  7692:                               if (confirm(`Delete habit "${habit.name}"?`)) {
+  7693:                                 setData(prev => ({
+  7694:                                   ...prev,
+  7695:                                   habits: prev.habits.filter(h => h.id !== habit.id),
+  7696:                                   habitLogs: prev.habitLogs.filter(l => l.habitId !== habit.id)
+  7697:                                 }));
+  7698:                               }
+  7699:                             }}
+  7700:                             className="text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+  7701:                           >
+  7702:                             <Trash2 size={16} />
+  7703:                           </button>
+  7704:                         </div>
+  7705:                       ))
+  7706:                     )}
+  7707:                   </div>
+  7708:                 </div>
+  7709:               </details>
+  7710: 
+  7711:               <div className="glass-card p-6 space-y-5">
+  7712:                 <div className="flex items-start justify-between gap-4">
+  7713:                   <div>
+  7714:                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-500">Reminders</p>
+  7715:                     <h4 className="mt-2 font-bold text-[#111827] dark:text-white">Nudges and permissions</h4>
+  7716:                   </div>
+  7717:                   <Bell size={20} className="text-brand-500 shrink-0" />
+  7718:                 </div>
+  7719:                 <div className="grid gap-3 sm:grid-cols-3">
+  7720:                   <div className="premium-profile-setting-chip">
+  7721:                     <span>Notifications</span>
+  7722:                     <strong className="capitalize">{profileNotificationLabel}</strong>
+  7723:                   </div>
+  7724:                   <div className="premium-profile-setting-chip">
+  7725:                     <span>Meal alerts</span>
+  7726:                     <strong>{data.profile.mealRemindersEnabled ? 'On' : 'Off'}</strong>
+  7727:                   </div>
+  7728:                   <div className="premium-profile-setting-chip">
+  7729:                     <span>Water cadence</span>
+  7730:                     <strong>{data.profile.waterReminderIntervalHours}h</strong>
+  7731:                   </div>
+  7732:                 </div>
+  7733:                 <div className="grid gap-4 sm:grid-cols-2">
+  7734:                   <div className="neutral-row rounded-2xl p-4 space-y-3">
+  7735:                     <div className="flex items-center gap-2">
+  7736:                       <Bell size={16} className="text-brand-500" />
+  7737:                       <div>
+  7738:                         <p className="font-semibold text-[#111827] dark:text-white">Meal reminders</p>
+  7739:                         <p className="text-xs text-slate-600 dark:text-slate-300">Breakfast, lunch, and dinner nudges while the app is open</p>
+  7740:                       </div>
+  7741:                     </div>
+  7742:                     <button
+  7743:                       type="button"
+  7744:                       onClick={() => setData(prev => ({ ...prev, profile: { ...prev.profile, mealRemindersEnabled: !prev.profile.mealRemindersEnabled } }))}
+  7745:                       className={cn("w-full py-2.5 rounded-xl text-sm font-semibold", segmentedButtonStyles(data.profile.mealRemindersEnabled))}
+  7746:                     >
+  7747:                       {data.profile.mealRemindersEnabled ? 'Meal reminders on' : 'Meal reminders off'}
+  7748:                     </button>
+  7749:                   </div>
+  7750: 
+  7751:                   <div className="neutral-row rounded-2xl p-4 space-y-3">
+  7752:                     <div className="flex items-center gap-2">
+  7753:                       <Droplets size={16} className="text-brand-500" />
+  7754:                       <div>
+  7755:                         <p className="font-semibold text-[#111827] dark:text-white">Water reminders</p>
+  7756:                         <p className="text-xs text-slate-600 dark:text-slate-300">Gentle hydration nudges every few hours</p>
+  7757:                       </div>
+  7758:                     </div>
+  7759:                     <button
+  7760:                       type="button"
+  7761:                       onClick={() => setData(prev => ({ ...prev, profile: { ...prev.profile, waterRemindersEnabled: !prev.profile.waterRemindersEnabled } }))}
+  7762:                       className={cn("w-full py-2.5 rounded-xl text-sm font-semibold", segmentedButtonStyles(data.profile.waterRemindersEnabled))}
+  7763:                     >
+  7764:                       {data.profile.waterRemindersEnabled ? 'Water reminders on' : 'Water reminders off'}
+  7765:                     </button>
+  7766:                   </div>
+  7767:                 </div>
+  7768: 
+  7769:                 <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+  7770:                   <div>
+  7771:                     <label className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">Water Reminder Interval (hours)</label>
+  7772:                     <input
+  7773:                       type="number"
+  7774:                       min="1"
+  7775:                       max="12"
+  7776:                       value={data.profile.waterReminderIntervalHours}
+  7777:                       onChange={(e) => setData(prev => ({
+  7778:                         ...prev,
+  7779:                         profile: {
+  7780:                           ...prev.profile,
+  7781:                           waterReminderIntervalHours: Math.min(12, Math.max(1, parseInt(e.target.value) || 1)),
+  7782:                         },
+  7783:                       }))}
+  7784:                       className="neutral-input w-full mt-1 p-3"
+  7785:                     />
+  7786:                   </div>
+  7787: 
+  7788:                   <button
+  7789:                     type="button"
+  7790:                     onClick={() => {
+  7791:                       void requestNotificationPermission().then((permission) => {
+  7792:                         setData((prev) => ({
+  7793:                           ...prev,
+  7794:                           profile: {
+  7795:                             ...prev.profile,
+  7796:                             notificationPermission: permission,
+  7797:                           },
+  7798:                         }));
+  7799:                       });
+  7800:                     }}
+  7801:                     className="neutral-secondary-btn px-4 py-3 text-sm font-semibold"
+  7802:                   >
+  7803:                     {data.profile.notificationPermission === 'granted' ? 'Notifications allowed' : 'Enable notifications'}
+  7804:                   </button>
+  7805:                 </div>
+  7806: 
+  7807:                 <div className="neutral-row rounded-2xl px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
+  7808:                   Browser notification status:
+  7809:                   <span className="ml-2 font-semibold text-[#111827] dark:text-white capitalize">
+  7810:                     {profileNotificationLabel}
+  7811:                   </span>
+  7812:                 </div>
+  7813:               </div>
+  7814: 
+  7815:               <div className="glass-card p-6 space-y-5">
+  7816:                 <div className="flex items-start justify-between gap-4">
+  7817:                   <div>
+  7818:                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-500">Profile details</p>
+  7819:                     <h4 className="mt-2 font-bold text-[#111827] dark:text-white">Body numbers and personalization</h4>
+  7820:                   </div>
+  7821:                   <Scale size={20} className="text-brand-500 shrink-0" />
+  7822:                 </div>
+  7823:                 <div className="grid gap-3 sm:grid-cols-3">
+  7824:                   <div className="premium-profile-setting-chip">
+  7825:                     <span>Age</span>
+  7826:                     <strong>{data.profile.age} yrs</strong>
+  7827:                   </div>
+  7828:                   <div className="premium-profile-setting-chip">
+  7829:                     <span>Height</span>
+  7830:                     <strong>{data.profile.heightCm} cm</strong>
+  7831:                   </div>
+  7832:                   <div className="premium-profile-setting-chip">
+  7833:                     <span>Current weight</span>
+  7834:                     <strong>{data.profile.currentWeight}{data.profile.weightUnit}</strong>
+  7835:                   </div>
+  7836:                 </div>
+  7837:                 <div className="space-y-4">
+  7838:                   <div className="grid gap-4 sm:grid-cols-3">
+  7839:                     <div>
+  7840:                       <label className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">Age</label>
+  7841:                       <input
+  7842:                         type="number"
+  7843:                         value={data.profile.age}
+  7844:                         onChange={(e) => setData(prev => ({ ...prev, profile: { ...prev.profile, age: parseInt(e.target.value) || 0 } }))}
+  7845:                         className="neutral-input w-full mt-1 p-3"
+  7846:                       />
+  7847:                     </div>
+  7848:                     <div>
+  7849:                       <label className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">Height (cm)</label>
+  7850:                       <input
+  7851:                         type="number"
+  7852:                         value={data.profile.heightCm}
+  7853:                         onChange={(e) => setData(prev => ({ ...prev, profile: { ...prev.profile, heightCm: parseFloat(e.target.value) || 0 } }))}
+  7854:                         className="neutral-input w-full mt-1 p-3"
+  7855:                       />
+  7856:                     </div>
+  7857:                     <div>
+  7858:                       <label className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">Current Weight ({data.profile.weightUnit})</label>
+  7859:                       <input
+  7860:                         type="number"
+  7861:                         value={data.profile.currentWeight}
+  7862:                         onChange={(e) => setData(prev => ({ ...prev, profile: { ...prev.profile, currentWeight: parseFloat(e.target.value) || 0 } }))}
+  7863:                         className="neutral-input w-full mt-1 p-3"
+  7864:                       />
+  7865:                     </div>
+  7866:                   </div>
+  7867:                   <div className="neutral-row rounded-2xl p-4 space-y-3">
+  7868:                     <p className="text-sm text-slate-600 dark:text-slate-300">
+  7869:                       Goal weight, calories, water, and macro targets now live in Progress.
+  7870:                     </p>
+  7871:                     <button
+  7872:                       type="button"
+  7873:                       onClick={() => handlePrimaryTabChange('weight')}
+  7874:                       className="neutral-secondary-btn w-full py-3 px-4 text-sm font-semibold inline-flex items-center justify-center gap-2"
+  7875:                     >
+  7876:                       <TrendingUp size={16} />
+  7877:                       Open goal setup
+  7878:                     </button>
+  7879:                   </div>
+  7880:                   <div>
+  7881:                     <label className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">Custom Wallpaper</label>
+  7882:                     <div className="mt-2 space-y-4">
+  7883:                       {data.profile.wallpaperUrl ? (
+  7884:                         <>
+  7885:                           <div className="relative group rounded-2xl overflow-hidden aspect-video border border-slate-200 dark:border-[#3d516d]">
+  7886:                             <img
+  7887:                               src={wallpaperPreviewUrl}
+  7888:                               alt="Custom Wallpaper"
+  7889:                               className="w-full h-full object-cover"
+  7890:                               referrerPolicy="no-referrer"
+  7891:                             />
+  7892:                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+  7893:                               <label className="p-2 bg-black/30 backdrop-blur-md rounded-full text-white cursor-pointer hover:bg-black/50 transition-colors">
+  7894:                                 <Camera size={20} />
+  7895:                                 <input type="file" accept="image/*" className="hidden" onChange={handleWallpaperUpload} />
+  7896:                               </label>
+  7897:                               <button
+  7898:                                 onClick={removeWallpaper}
+  7899:                                 className="p-2 bg-black/30 backdrop-blur-md rounded-full text-white hover:bg-black/50 transition-colors"
+  7900:                               >
+  7901:                                 <Trash2 size={20} />
+  7902:                               </button>
+  7903:                             </div>
+  7904:                           </div>
+  7905: 
+  7906:                           <div className="space-y-3 p-4">
+  7907: 
+  7908:                             <div className="space-y-1">
+  7909:                               <div className="flex justify-between items-center">
+  7910:                                 <label className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Opacity</label>
+  7911:                                 <span className="text-[10px] font-mono font-bold text-[#111827] dark:text-white">{Math.round((data.profile.wallpaperOpacity || 1) * 100)}%</span>
+  7912:                               </div>
+  7913:                               <input
+  7914:                                 type="range"
+  7915:                                 min="0"
+  7916:                                 max="1"
+  7917:                                 step="0.05"
+  7918:                                 value={data.profile.wallpaperOpacity || 1}
+  7919:                                 onChange={(e) => setData(prev => ({ ...prev, profile: { ...prev.profile, wallpaperOpacity: parseFloat(e.target.value) } }))}
+  7920:                                 className="w-full h-1.5 bg-slate-200 dark:bg-[#2d3a4e] rounded-lg appearance-none cursor-pointer accent-slate-600"
+  7921:                               />
+  7922:                             </div>
+  7923: 
+  7924:                             <div className="space-y-1">
+  7925:                               <div className="flex justify-between items-center">
+  7926:                                 <label className="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Blur</label>
+  7927:                                 <span className="text-[10px] font-mono font-bold text-[#111827] dark:text-white">{data.profile.wallpaperBlur || 0}px</span>
+  7928:                               </div>
+  7929:                               <input
+  7930:                                 type="range"
+  7931:                                 min="0"
+  7932:                                 max="20"
+  7933:                                 step="1"
+  7934:                                 value={data.profile.wallpaperBlur || 0}
+  7935:                                 onChange={(e) => setData(prev => ({ ...prev, profile: { ...prev.profile, wallpaperBlur: parseInt(e.target.value) } }))}
+  7936:                                 className="w-full h-1.5 bg-slate-200 dark:bg-[#2d3a4e] rounded-lg appearance-none cursor-pointer accent-slate-600"
+  7937:                               />
+  7938:                             </div>
+  7939:                           </div>
+  7940:                         </>
+  7941:                       ) : (
+  7942:                         <label className="flex flex-col items-center justify-center p-6 border border-dashed border-slate-200 dark:border-[#3d516d] rounded-2xl bg-slate-50 dark:bg-[#213149] cursor-pointer hover:bg-slate-100 dark:hover:bg-[#30415b] transition-all group">
+  7943:                           <Image className="text-slate-500 dark:text-slate-400 mb-2 group-hover:scale-110 transition-transform" size={32} />
+  7944:                           <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Upload Background Image</span>
+  7945:                           <input type="file" accept="image/*" className="hidden" onChange={handleWallpaperUpload} />
+  7946:                         </label>
+  7947:                       )}
+  7948:                     </div>
+  7949:                   </div>
+  7950:                 </div>
+  7951:               </div>
+  7952: 
+  7953:               <div className="premium-card p…9878 tokens truncated…ssName="flex flex-wrap items-center justify-end gap-2 shrink-0">
+  6161:                             <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+  6162:                               {getCombinedHistoryMetric(entry, data.profile.weightUnit)}
+  6163:                             </span>
+  6164:                             {(entry.type === 'food' || entry.type === 'activity') && (
+  6165:                               <button
+  6166:                                 type="button"
+  6167:                                 onClick={() => handleEditCombinedHistoryEntry(entry)}
+  6168:                                 className="neutral-pill-btn rounded-full px-3 py-1.5 text-xs font-semibold"
+  6169:                               >
+  6170:                                 Edit
+  6171:                               </button>
+  6172:                             )}
+  6173:                             <button
+  6174:                               type="button"
+  6175:                               onClick={() => { void handleDeleteCombinedHistoryEntry(entry); }}
+  6176:                               className="neutral-danger-btn inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold"
+  6177:                             >
+  6178:                               <Trash2 size={14} />
+  6179:                               {entry.type === 'habit' ? 'Remove' : 'Delete'}
+  6180:                             </button>
+  6181:                           </div>
+  6182:                         </div>
+  6183:                       ))}
+  6184:                     </div>
+  6185:                   )}
+  6186:                 </div>
+  6187:                 <motion.button
+  6188:                   whileHover={{ scale: 1.08 }}
+  6189:                   whileTap={{ scale: 0.94 }}
+  6190:                   type="button"
+  6191:                   onClick={() => openNewFoodModal(getSuggestedMealType())}
+  6192:                   className="premium-fab"
+  6193:                   aria-label="Add food"
+  6194:                 >
+  6195:                   <Plus size={24} className="text-white" />
+  6196:                 </motion.button>
+  6197:               </section>
+  6198: 
+  6199:           )}
+  6200: 
+  6201:           {activeTab === 'habits' && (
+  6202:             <section className="space-y-8 premium-tab-shell" style={{ '--card-bg': 'var(--card-bg-habits)', '--card-border': 'var(--card-border-habits)' } as React.CSSProperties}>
+  6203:               <div className="glass-card premium-tab-hero p-7">
+  6204:                 <div className="flex items-center justify-between mb-6">
+  6205:                   <div>
+  6206:                     <h3 className="text-xl font-bold text-[#111827] dark:text-white">Daily Habits</h3>
+  6207:                     <p className="text-sm text-slate-600 dark:text-slate-300">Track your consistency</p>
+  6208:                     <AnimatePresence initial={false}>
+  6209:                       {actionFeedback?.kind === 'habit' && (
+  6210:                         <motion.div
+--- 3630..3870 ---
+  3630:       }
+  3631:     }
+  3632: 
+  3633:     for (const entry of data.activityEntries || []) {
+  3634:       if (entry.timestamp < firstDayTime) {
+  3635:         continue;
+  3636:       }
+  3637: 
+  3638:       const day = summaryMap.get(formatDayKey(entry.timestamp));
+  3639: 
+  3640:       if (day) {
+  3641:         day.workouts += 1;
+  3642:       }
+  3643:     }
+  3644: 
+  3645:     return Array.from(summaryMap.values());
+  3646:   }, [data.activityEntries, data.foodEntries, data.waterEntries, shouldComputeSevenDayMetrics]);
+  3647: 
+  3648:   const historyData = useMemo(() => {
+  3649:     if (!shouldComputeHistoryCharts) {
+  3650:       return [];
+  3651:     }
+  3652: 
+  3653:     return weeklyDaySummaries.map((day) => ({
+  3654:       date: day.label,
+  3655:       calories: day.calories,
+  3656:       goal: data.profile.dailyCalorieGoal || 2000,
+  3657:     }));
+  3658:   }, [data.profile.dailyCalorieGoal, shouldComputeHistoryCharts, weeklyDaySummaries]);
+  3659: 
+  3660:   const profileInfoRows = useMemo(() => {
+  3661:     const name = data.profile.name?.trim() || 'Not set';
+  3662:     return [
+  3663:       { label: 'Name', value: name, icon: UserIcon },
+  3664:       { label: 'Age', value: `${data.profile.age} yrs`, icon: Calendar },
+  3665:       { label: 'Height', value: `${data.profile.heightCm} cm`, icon: Ruler },
+  3666:       { label: 'Current weight', value: `${data.profile.currentWeight}${data.profile.weightUnit}`, icon: Scale },
+  3667:     ];
+  3668:   }, [data.profile]);
+  3669: 
+  3670:   const selectedDashboardMetrics = useMemo(
+  3671:     () => normalizeDashboardMetrics(data.profile.dashboardMetrics),
+  3672:     [data.profile.dashboardMetrics]
+  3673:   );
+  3674: 
+  3675:   const goalFocusKey = useMemo(() => {
+  3676:     const currentFocus = data.profile.onboarding.primaryFocus;
+  3677: 
+  3678:     if (mapPrimaryFocusToGoalType(currentFocus) === data.profile.goalType) {
+  3679:       return currentFocus;
+  3680:     }
+  3681: 
+  3682:     if (data.profile.goalType === 'gain' && (currentFocus === 'weight_gain' || currentFocus === 'muscle_gain')) {
+  3683:       return currentFocus;
+  3684:     }
+  3685: 
+  3686:     return mapGoalTypeToPrimaryFocus(data.profile.goalType);
+  3687:   }, [data.profile.goalType, data.profile.onboarding.primaryFocus]);
+  3688: 
+  3689:   const goalFocusLabel = useMemo(
+  3690:     () =>
+  3691:       GOAL_FOCUS_OPTIONS.find((option) => option.value === goalFocusKey)?.label ??
+  3692:       GOAL_LABELS[data.profile.goalType],
+  3693:     [data.profile.goalType, goalFocusKey]
+  3694:   );
+  3695: 
+  3696:   const profileGoalRows = useMemo(() => [
+  3697:     { label: 'Main goal', value: goalFocusLabel, icon: Target },
+  3698:     { label: 'Daily calories', value: `${data.profile.dailyCalorieGoal} kcal`, icon: Flame },
+  3699:     {
+  3700:       label: 'Macro targets',
+  3701:       value: `${proteinGoal}P / ${carbsGoal}C / ${fatGoal}F`,
+  3702:       icon: Dumbbell,
+  3703:     },
+  3704:     { label: 'Water goal', value: `${data.profile.dailyWaterGoalMl} ml`, icon: Droplets },
+  3705:     { label: 'Weight goal', value: `${data.profile.weightGoal}${data.profile.weightUnit}`, icon: Scale },
+  3706:   ], [carbsGoal, data.profile, fatGoal, goalFocusLabel, proteinGoal]);
+  3707: 
+  3708:   const selectedDashboardMetricLabels = useMemo(
+  3709:     () =>
+  3710:       selectedDashboardMetrics.map((metric) =>
+  3711:         metric === 'carbs' && data.profile.netCarbsMode
+  3712:           ? 'Net Carbs'
+  3713:           : DASHBOARD_METRIC_OPTIONS.find((option) => option.value === metric)?.label ?? metric
+  3714:       ),
+  3715:     [data.profile.netCarbsMode, selectedDashboardMetrics]
+  3716:   );
+  3717: 
+  3718:   const activeFastingPlan = useMemo(
+  3719:     () => FASTING_PLAN_OPTIONS.find((option) => option.value === (data.profile.fastingPlan || '16:8')) || FASTING_PLAN_OPTIONS[2],
+  3720:     [data.profile.fastingPlan]
+  3721:   );
+  3722: 
+  3723:   const fastingProgressPercent = useMemo(() => {
+  3724:     if (!data.fastingState?.isActive || !data.fastingState.startedAt) {
+  3725:       return 0;
+  3726:     }
+  3727: 
+  3728:     const elapsedHours = (timeNow - data.fastingState.startedAt) / (1000 * 60 * 60);
+  3729:     return clampNumber(Math.round((elapsedHours / activeFastingPlan.fastHours) * 100), 0, 100);
+  3730:   }, [activeFastingPlan.fastHours, data.fastingState?.isActive, data.fastingState?.startedAt, timeNow]);
+  3731: 
+  3732:   const fastingSummary = useMemo(() => {
+  3733:     if (!data.fastingState?.isActive || !data.fastingState.startedAt) {
+  3734:       return {
+  3735:         status: 'Ready to start',
+  3736:         headline: `${activeFastingPlan.label} fast`,
+  3737:         detail: `${activeFastingPlan.fastHours}h fasting | ${activeFastingPlan.eatingHours}h eating window`,
+  3738:       };
+  3739:     }
+  3740: 
+  3741:     const elapsedHours = Math.max(0, (timeNow - data.fastingState.startedAt) / (1000 * 60 * 60));
+  3742:     const remainingHours = Math.max(0, activeFastingPlan.fastHours - elapsedHours);
+  3743: 
+  3744:     if (remainingHours <= 0.05) {
+  3745:       return {
+  3746:         status: 'Fast complete',
+  3747:         headline: `${activeFastingPlan.label} complete`,
+  3748:         detail: 'End the fast when you are ready to log your next meal.',
+  3749:       };
+  3750:     }
+  3751: 
+  3752:     return {
+  3753:       status: 'Fast in progress',
+  3754:       headline: `${remainingHours.toFixed(1)}h left`,
+  3755:       detail: `${elapsedHours.toFixed(1)}h done of your ${activeFastingPlan.fastHours}h target`,
+  3756:     };
+  3757:   }, [activeFastingPlan.eatingHours, activeFastingPlan.fastHours, activeFastingPlan.label, data.fastingState?.isActive, data.fastingState?.startedAt, timeNow]);
+  3758: 
+  3759:   const profileDietStyleLabel = useMemo(
+  3760:     () => ONBOARDING_OPTIONS.dietStyle.find((option) => option.value === data.profile.onboarding.dietStyle)?.label ?? 'Not set',
+  3761:     [data.profile.onboarding.dietStyle]
+  3762:   );
+  3763: 
+  3764:   const profileEatingOutLabel = useMemo(
+  3765:     () => ONBOARDING_OPTIONS.eatingOutFrequency.find((option) => option.value === data.profile.onboarding.eatingOutFrequency)?.label ?? 'Not set',
+  3766:     [data.profile.onboarding.eatingOutFrequency]
+  3767:   );
+  3768: 
+  3769:   const profileNotificationLabel = useMemo(
+  3770:     () => (data.profile.notificationPermission === 'default' ? 'Ask in browser' : data.profile.notificationPermission),
+  3771:     [data.profile.notificationPermission]
+  3772:   );
+  3773: 
+  3774:   const mobileSyncBadge = useMemo(() => {
+  3775:     if (!userId) {
+  3776:       return {
+  3777:         label: 'Local only',
+  3778:         className: 'border border-amber-200 bg-amber-50 text-amber-700',
+  3779:       };
+  3780:     }
+  3781: 
+  3782:     if (!isOnline) {
+  3783:       return {
+  3784:         label: 'Offline',
+  3785:         className: 'border border-slate-200 bg-slate-100 text-slate-700 dark:border-[#34495f] dark:bg-[#1a2837] dark:text-slate-200',
+  3786:       };
+  3787:     }
+  3788: 
+  3789:     if (foodLogError) {
+  3790:       return {
+  3791:         label: 'Sync paused',
+  3792:         className: 'border border-rose-200 bg-rose-50 text-rose-700',
+  3793:       };
+  3794:     }
+  3795: 
+  3796:     return {
+  3797:       label: 'Sync on',
+  3798:       className: 'border border-brand-200 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-200',
+  3799:     };
+  3800:   }, [foodLogError, isOnline, userId]);
+  3801: 
+  3802:   const profileOverviewCards = useMemo(
+  3803:     () => [
+  3804:       {
+  3805:         label: 'Goal track',
+  3806:         value: goalFocusLabel,
+  3807:         helper: `Goal ${data.profile.weightGoal}${data.profile.weightUnit}`,
+  3808:         icon: Target,
+  3809:         tone: 'brand',
+  3810:       },
+  3811:       {
+  3812:         label: 'Calories',
+  3813:         value: `${data.profile.dailyCalorieGoal} kcal`,
+  3814:         helper: data.profile.useAutoCalorieGoal ? 'Auto target' : 'Manual target',
+  3815:         icon: Flame,
+  3816:         tone: 'amber',
+  3817:       },
+  3818:       {
+  3819:         label: 'Hydration',
+  3820:         value: `${data.profile.dailyWaterGoalMl} ml`,
+  3821:         helper: data.profile.waterRemindersEnabled ? 'Water reminders on' : 'Water reminders off',
+  3822:         icon: Droplets,
+  3823:         tone: 'sky',
+  3824:       },
+  3825:       {
+  3826:         label: 'Sync',
+  3827:         value: mobileSyncBadge.label,
+  3828:         helper: userId
+  3829:           ? isOnline
+  3830:             ? 'Cloud backup ready'
+  3831:             : 'Offline mode'
+  3832:           : 'Stored on this device',
+  3833:         icon: Package,
+  3834:         tone: 'slate',
+  3835:       },
+  3836:     ],
+  3837:     [
+  3838:       data.profile.dailyCalorieGoal,
+  3839:       data.profile.dailyWaterGoalMl,
+  3840:       data.profile.useAutoCalorieGoal,
+  3841:       data.profile.waterRemindersEnabled,
+  3842:       data.profile.weightGoal,
+  3843:       data.profile.weightUnit,
+  3844:       goalFocusLabel,
+  3845:       isOnline,
+  3846:       mobileSyncBadge.label,
+  3847:       userId,
+  3848:     ]
+  3849:   );
+  3850: 
+  3851:   const profileSetupCards = useMemo(
+  3852:     () => [
+  3853:       { label: 'Diet style', value: profileDietStyleLabel, icon: Sparkles },
+  3854:       { label: 'Eating out', value: profileEatingOutLabel, icon: Utensils },
+  3855:       {
+  3856:         label: 'Support',
+  3857:         value: data.profile.accountabilityPartner?.trim() || 'Add a coach or partner',
+  3858:         icon: Heart,
+  3859:       },
+  3860:     ],
+  3861:     [data.profile.accountabilityPartner, profileDietStyleLabel, profileEatingOutLabel]
+  3862:   );
+  3863: 
+  3864:   const proteinHistoryData = useMemo(() => {
+  3865:     if (!shouldComputeHistoryCharts) {
+  3866:       return [];
+  3867:     }
+  3868: 
+  3869:     return weeklyDaySummaries.map((day) => ({
+  3870:       date: day.label,
+--- 5000..5145 ---
+  5000:       label: string;
+  5001:       value: string;
+  5002:       helper: string;
+  5003:       icon: LucideIcon;
+  5004:       accentClass: string;
+  5005:       progress: number;
+  5006:       progressFill?: string;
+  5007:     }> = {
+  5008:       carbs: {
+  5009:         label: data.profile.netCarbsMode ? 'Net Carbs' : 'Carbs',
+  5010:         value: `${Math.round(data.profile.netCarbsMode ? dailyNetCarbs : dailyStats.carbs)}g`,
+  5011:         helper: data.profile.netCarbsMode
+  5012:           ? `${Math.round(dailyStats.fiber)}g fiber removed`
+  5013:           : `Goal ${carbsGoal}g`,
+  5014:         icon: Brain,
+  5015:         accentClass: 'premium-home-grid-card-carbs',
+  5016:         progress: clampNumber(Math.round(((data.profile.netCarbsMode ? dailyNetCarbs : dailyStats.carbs) / Math.max(1, carbsGoal)) * 100), 0, 100),
+  5017:         progressFill: 'linear-gradient(90deg, #8b5cf6, #a78bfa)',
+  5018:       },
+  5019:       fat: {
+  5020:         label: 'Fat',
+  5021:         value: `${Math.round(dailyStats.fat)}g`,
+  5022:         helper: `Goal ${fatGoal}g`,
+  5023:         icon: Heart,
+  5024:         accentClass: 'premium-home-grid-card-fat',
+  5025:         progress: clampNumber(Math.round((dailyStats.fat / Math.max(1, fatGoal)) * 100), 0, 100),
+  5026:         progressFill: 'linear-gradient(90deg, #fb7185, #fda4af)',
+  5027:       },
+  5028:       fiber: {
+  5029:         label: 'Fiber',
+  5030:         value: `${Math.round(dailyStats.fiber)}g`,
+  5031:         helper: 'Target 30g daily',
+  5032:         icon: Sparkles,
+  5033:         accentClass: 'premium-home-grid-card-fiber',
+  5034:         progress: clampNumber(Math.round((dailyStats.fiber / 30) * 100), 0, 100),
+  5035:         progressFill: 'linear-gradient(90deg, #10b981, #34d399)',
+  5036:       },
+  5037:       sugar: {
+  5038:         label: 'Sugar',
+  5039:         value: `${Math.round(dailyStats.sugar)}g`,
+  5040:         helper: 'Packaged-food awareness',
+  5041:         icon: Coffee,
+  5042:         accentClass: 'premium-home-grid-card-sugar',
+  5043:         progress: clampNumber(Math.round((dailyStats.sugar / 50) * 100), 0, 100),
+  5044:         progressFill: 'linear-gradient(90deg, #f59e0b, #fbbf24)',
+  5045:       },
+  5046:       sodium: {
+  5047:         label: 'Sodium',
+  5048:         value: `${Math.round(dailyStats.sodiumMg)} mg`,
+  5049:         helper: 'Guide 2300 mg daily',
+  5050:         icon: ShieldCheck,
+  5051:         accentClass: 'premium-home-grid-card-sodium',
+  5052:         progress: clampNumber(Math.round((dailyStats.sodiumMg / 2300) * 100), 0, 100),
+  5053:         progressFill: 'linear-gradient(90deg, #64748b, #94a3b8)',
+  5054:       },
+  5055:     };
+  5056: 
+  5057:     return [
+  5058:       {
+  5059:         label: 'Calories',
+  5060:         value: `${Math.round(dailyStats.consumed)}`,
+  5061:         helper: `${remainingCalories >= 0 ? Math.round(remainingCalories) : Math.abs(Math.round(remainingCalories))} ${remainingCalories >= 0 ? 'left' : 'over'}`,
+  5062:         icon: Flame,
+  5063:         accentClass: 'premium-home-grid-card-energy',
+  5064:         progress: calorieProgressPercent,
+  5065:         highlight: 'calories',
+  5066:       },
+  5067:       {
+  5068:         label: 'Protein',
+  5069:         value: `${Math.round(dailyStats.protein)}g`,
+  5070:         helper: remainingProtein <= 0 ? 'goal met' : `${Math.round(remainingProtein)}g left`,
+  5071:         icon: Dumbbell,
+  5072:         accentClass: 'premium-home-grid-card-protein',
+  5073:         progress: proteinProgressPercent,
+  5074:         progressFill: 'linear-gradient(90deg, #38bdf8, #0ea5e9)',
+  5075:         highlight: 'protein',
+  5076:       },
+  5077:       ...selectedDashboardMetrics.map((metric) => extraCards[metric]),
+  5078:       {
+  5079:         label: 'Water',
+  5080:         value: `${Math.round(dailyStats.water)} ml`,
+  5081:         helper: remainingWater <= 0 ? 'goal met' : `${Math.round(remainingWater)} ml left`,
+  5082:         icon: Droplets,
+  5083:         accentClass: 'premium-home-grid-card-water',
+  5084:         progress: waterProgressPercent,
+  5085:         progressFill: 'linear-gradient(90deg, #0ea5e9, #38bdf8)',
+  5086:         highlight: 'water',
+  5087:       },
+  5088:     ];
+  5089:   }, [
+  5090:     calorieProgressPercent,
+  5091:     carbsGoal,
+  5092:     dailyNetCarbs,
+  5093:     dailyStats.carbs,
+  5094:     dailyStats.consumed,
+  5095:     dailyStats.fat,
+  5096:     dailyStats.fiber,
+  5097:     dailyStats.protein,
+  5098:     dailyStats.sodiumMg,
+  5099:     dailyStats.sugar,
+  5100:     dailyStats.water,
+  5101:     data.profile.netCarbsMode,
+  5102:     fatGoal,
+  5103:     proteinProgressPercent,
+  5104:     remainingCalories,
+  5105:     remainingProtein,
+  5106:     remainingWater,
+  5107:     selectedDashboardMetrics,
+  5108:     waterProgressPercent,
+  5109:   ]);
+  5110:   const reviewNutritionChips = useMemo<
+  5111:     Array<{ label: string; value: string; className: string }>
+  5112:   >(() => {
+  5113:     if (!hasDraftNutrition) {
+  5114:       return [];
+  5115:     }
+  5116: 
+  5117:     const chips = [
+  5118:       {
+  5119:         label: 'Calories',
+  5120:         value: `${sanitizeCaloriesValue(parseFloat(foodCalories) || 0)} kcal`,
+  5121:         className: 'premium-nutrition-chip-energy',
+  5122:       },
+  5123:       {
+  5124:         label: 'Protein',
+  5125:         value: `${sanitizeMacroValue(parseFloat(foodProtein) || 0)}g`,
+  5126:         className: 'premium-nutrition-chip-protein',
+  5127:       },
+  5128:       {
+  5129:         label: 'Carbs',
+  5130:         value: `${sanitizeMacroValue(parseFloat(foodCarbs) || 0)}g`,
+  5131:         className: 'premium-nutrition-chip-carbs',
+  5132:       },
+  5133:       {
+  5134:         label: 'Fat',
+  5135:         value: `${sanitizeMacroValue(parseFloat(foodFat) || 0)}g`,
+  5136:         className: 'premium-nutrition-chip-fat',
+  5137:       },
+  5138:     ];
+  5139: 
+  5140:     if (data.profile.netCarbsMode) {
+  5141:       chips.push({
+  5142:         label: 'Net Carbs',
+  5143:         value: `${Math.max(0, sanitizeMacroValue(parseFloat(foodCarbs) || 0) - (sanitizeOptionalMacroValue(parseFloat(foodFiber), 120) || 0))}g`,
+  5144:         className: 'premium-nutrition-chip-carbs',
+  5145:       });
+
